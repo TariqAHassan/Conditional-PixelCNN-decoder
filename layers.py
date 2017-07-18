@@ -6,9 +6,7 @@ def get_weights(shape, name, mask=None):
     weights_initializer = tf.contrib.layers.xavier_initializer()
     W = tf.get_variable(name, shape, tf.float32, weights_initializer)
 
-    '''
-        Use of masking to hide subsequent pixel values 
-    '''
+    # Use of masking to hide subsequent pixel values
     if mask:
         filter_mid_x = shape[0] // 2
         filter_mid_y = shape[1] // 2
@@ -51,6 +49,8 @@ class GatedCNN():
             self.gated_conv()
         else:
             self.simple_conv()
+
+        self.fan_out = None
 
     def gated_conv(self):
         W_f = get_weights(self.W_shape, "v_W", mask=self.mask)
