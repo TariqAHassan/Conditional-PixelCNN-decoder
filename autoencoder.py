@@ -1,7 +1,8 @@
-import tensorflow as tf
 import numpy as np
 from utils import *
 from models import *
+import tensorflow as tf
+
 
 def trainAE(conf, data):
     encoder_X = tf.placeholder(tf.float32, shape=[None, conf.img_height, conf.img_width, conf.channel])
@@ -27,29 +28,32 @@ def trainAE(conf, data):
 
         if os.path.exists(conf.ckpt_file):
             saver.restore(sess, conf.ckpt_file)
-            print "Model Restored"
+            print("Model Restored")
 
         # TODO The training part below and in main.py could be generalized
         if conf.epochs > 0:
-            print "Started Model Training..."
+            print("Started Model Training...")
         pointer = 0
         step = 0
         for i in range(conf.epochs):
             for j in range(conf.num_batches):
                 if conf.data == 'mnist':
-                    batch_X = binarize(data.train.next_batch(conf.batch_size)[0].reshape(conf.batch_size, conf.img_height, conf.img_width, conf.channel))
+                    batch_X = binarize(data.train.next_batch(conf.batch_size)[0].reshape(conf.batch_size,
+                                                                                         conf.img_height,
+                                                                                         conf.img_width,
+                                                                                         conf.channel))
                 else:
                     batch_X, pointer = get_batch(data, pointer, conf.batch_size)
 
-                _, l, summary = sess.run([optimizer, decoder.loss, merged], feed_dict={encoder_X: batch_X, decoder_X: batch_X})
+                _, l, summary = sess.run([optimizer, decoder.loss, merged],
+                                         feed_dict={encoder_X: batch_X, decoder_X: batch_X})
                 writer.add_summary(summary, step)
                 step += 1
 
-            print "Epoch: %d, Cost: %f"%(i, l)
-            if (i+1)%10 == 0:
+            print("Epoch: %d, Cost: %f" % (i, l))
+            if (i + 1) % 10 == 0:
                 saver.save(sess, conf.ckpt_file)
                 generate_ae(sess, encoder_X, decoder_X, y, data, conf, str(i))
 
         writer.close()
         generate_ae(sess, encoder_X, decoder_X, y, data, conf, '')
-

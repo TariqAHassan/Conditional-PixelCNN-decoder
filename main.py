@@ -5,6 +5,7 @@ from models import PixelCNN
 from autoencoder import *
 from utils import *
 
+
 def train(conf, data):
     X = tf.placeholder(tf.float32, shape=[None, conf.img_height, conf.img_width, conf.channel])
     model = PixelCNN(X, conf)
@@ -17,34 +18,35 @@ def train(conf, data):
 
     saver = tf.train.Saver(tf.trainable_variables())
 
-    with tf.Session() as sess: 
+    with tf.Session() as sess:
         sess.run(tf.initialize_all_variables())
         if os.path.exists(conf.ckpt_file):
             saver.restore(sess, conf.ckpt_file)
-            print "Model Restored"
-       
+            print("Model Restored")
+
         if conf.epochs > 0:
-            print "Started Model Training..."
+            print("Started Model Training...")
         pointer = 0
         for i in range(conf.epochs):
             for j in range(conf.num_batches):
                 if conf.data == "mnist":
                     batch_X, batch_y = data.train.next_batch(conf.batch_size)
                     batch_X = binarize(batch_X.reshape([conf.batch_size, \
-                            conf.img_height, conf.img_width, conf.channel]))
-                    batch_y = one_hot(batch_y, conf.num_classes) 
+                                                        conf.img_height, conf.img_width, conf.channel]))
+                    batch_y = one_hot(batch_y, conf.num_classes)
                 else:
                     batch_X, pointer = get_batch(data, pointer, conf.batch_size)
-                data_dict = {X:batch_X}
+                data_dict = {X: batch_X}
                 if conf.conditional is True:
                     data_dict[model.h] = batch_y
                 _, cost = sess.run([optimizer, model.loss], feed_dict=data_dict)
-            print "Epoch: %d, Cost: %f"%(i, cost)
-            if (i+1)%10 == 0:
+            print("Epoch: %d, Cost: %f" % (i, cost))
+            if (i + 1) % 10 == 0:
                 saver.save(sess, conf.ckpt_file)
                 generate_samples(sess, X, model.h, model.pred, conf, "")
 
         generate_samples(sess, X, model.h, model.pred, conf, "")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -60,9 +62,10 @@ if __name__ == "__main__":
     parser.add_argument('--samples_path', type=str, default='samples')
     parser.add_argument('--summary_path', type=str, default='logs')
     conf = parser.parse_args()
-  
+
     if conf.data == 'mnist':
         from tensorflow.examples.tutorials.mnist import input_data
+
         if not os.path.exists(conf.data_path):
             os.makedirs(conf.data_path)
         data = input_data.read_data_sets(conf.data_path)
@@ -73,12 +76,13 @@ if __name__ == "__main__":
         conf.num_batches = data.train.num_examples // conf.batch_size
     else:
         from keras.datasets import cifar10
+
         data = cifar10.load_data()
         labels = data[0][1]
         data = data[0][0].astype(np.float32)
-        data[:,0,:,:] -= np.mean(data[:,0,:,:])
-        data[:,1,:,:] -= np.mean(data[:,1,:,:])
-        data[:,2,:,:] -= np.mean(data[:,2,:,:])
+        data[:, 0, :, :] -= np.mean(data[:, 0, :, :])
+        data[:, 1, :, :] -= np.mean(data[:, 1, :, :])
+        data[:, 2, :, :] -= np.mean(data[:, 2, :, :])
         data = np.transpose(data, (0, 2, 3, 1))
         conf.img_height = 32
         conf.img_width = 32
@@ -86,7 +90,7 @@ if __name__ == "__main__":
         conf.num_classes = 10
         conf.num_batches = data.shape[0] // conf.batch_size
 
-    conf = makepaths(conf) 
+    conf = makepaths(conf)
     if conf.model == '':
         conf.conditional = False
         train(conf, data)
@@ -96,5 +100,3 @@ if __name__ == "__main__":
     elif conf.model.lower() == 'autoencoder':
         conf.conditional = True
         trainAE(conf, data)
-
-
