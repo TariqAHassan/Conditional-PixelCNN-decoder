@@ -9,6 +9,12 @@ def binarize(images):
     return (np.random.uniform(size=images.shape) < images).astype(np.float32)
 
 
+def one_hot(batch_y, num_classes):
+    y = np.zeros((batch_y.shape[0], num_classes))
+    y[np.arange(batch_y.shape[0]), batch_y] = 1
+    return y
+
+
 def generate_samples(sess, X, h, pred, conf, suff):
     print("Generating Sample Images...")
     n_row, n_col = 10, 10
@@ -72,12 +78,6 @@ def get_batch(data, pointer, batch_size):
     batch = data[batch_size * pointer: batch_size * (pointer + 1)]
     pointer += 1
     return [batch, pointer]
-
-
-def one_hot(batch_y, num_classes):
-    y = np.zeros((batch_y.shape[0], num_classes))
-    y[np.arange(batch_y.shape[0]), batch_y] = 1
-    return y
 
 
 def makepaths(conf):
