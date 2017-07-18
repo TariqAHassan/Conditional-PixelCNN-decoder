@@ -33,7 +33,7 @@ def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
-class GatedCNN():
+class GatedCNN(object):
     def __init__(self, W_shape, fan_in, gated=True, payload=None, mask=None, activation=True, conditional=None):
         self.fan_in = fan_in
         in_dim = self.fan_in.get_shape()[-1]
