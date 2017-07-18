@@ -31,8 +31,8 @@ def train(conf, data):
             for j in range(conf.num_batches):
                 if conf.data == "mnist":
                     batch_X, batch_y = data.train.next_batch(conf.batch_size)
-                    batch_X = binarize(batch_X.reshape([conf.batch_size, \
-                                                        conf.img_height, conf.img_width, conf.channel]))
+                    batch_X = binarize(batch_X.reshape(
+                        [conf.batch_size, conf.img_height, conf.img_width, conf.channel]))
                     batch_y = one_hot(batch_y, conf.num_classes)
                 else:
                     batch_X, pointer = get_batch(data, pointer, conf.batch_size)
