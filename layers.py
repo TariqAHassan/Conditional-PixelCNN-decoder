@@ -2,6 +2,18 @@ import tensorflow as tf
 import numpy as np
 
 
+def get_bias(shape, name):
+    return tf.get_variable(name, shape, tf.float32, tf.zeros_initializer)
+
+
+def conv_op(x, W):
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+
+
+def max_pool_2x2(x):
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+
+
 def get_weights(shape, name, mask=None):
     weights_initializer = tf.contrib.layers.xavier_initializer()
     W = tf.get_variable(name, shape, tf.float32, weights_initializer)
@@ -21,20 +33,9 @@ def get_weights(shape, name, mask=None):
     return W
 
 
-def get_bias(shape, name):
-    return tf.get_variable(name, shape, tf.float32, tf.zeros_initializer)
-
-
-def conv_op(x, W):
-    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
-
-
-def max_pool_2x2(x):
-    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-
-
 class GatedCNN(object):
-    def __init__(self, W_shape, fan_in, gated=True, payload=None, mask=None, activation=True, conditional=None):
+    def __init__(self, W_shape, fan_in, gated=True, payload=None,
+                 mask=None, activation=True, conditional=None):
         self.fan_in = fan_in
         in_dim = self.fan_in.get_shape()[-1]
         self.W_shape = [W_shape[0], W_shape[1], in_dim, W_shape[2]]
