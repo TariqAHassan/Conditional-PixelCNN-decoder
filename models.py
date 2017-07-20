@@ -15,14 +15,20 @@ class PixelCNN(object):
             if h is not None:
                 self.h = h
             else:
-                self.h = tf.placeholder(tf.float32, shape=[None, conf.num_classes])
+                self.h = tf.placeholder(tf.float32, shape=(None, conf.num_classes))
         else:
             self.h = None
 
         for i in range(conf.layers):
-            filter_size = 3 if i > 0 else 7
-            mask = 'b' if i > 0 else 'a'
-            residual = True if i > 0 else False
+            if i > 0:
+                filter_size = 3
+                mask = 'b'
+                residual = True
+            else:
+                filter_size = 7
+                mask = 'a'
+                residual = False
+
             i = str(i)
             with tf.variable_scope("v_stack" + i):
                 v_stack = GatedCNN([filter_size, filter_size, conf.f_map], v_stack_in,

@@ -2,10 +2,6 @@ import tensorflow as tf
 import numpy as np
 
 
-def get_bias(shape, name):
-    return tf.get_variable(name, shape, tf.float32, tf.zeros_initializer)
-
-
 def conv_op(x, W):
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
@@ -14,12 +10,16 @@ def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
+def get_bias(shape, name):
+    return tf.get_variable(name, shape, dtype=tf.float32, initializer=tf.zeros_initializer)
+
+
 def get_weights(shape, name, mask=None):
-    weights_initializer = tf.contrib.layers.xavier_initializer()
-    W = tf.get_variable(name, shape, tf.float32, weights_initializer)
+    W = tf.get_variable(name, shape=shape, dtype=tf.float32,
+                        initializer=tf.contrib.layers.xavier_initializer())
 
     # Use of masking to hide subsequent pixel values
-    if mask:
+    if mask.lower() in ('a', 'b'):
         filter_mid_x = shape[0] // 2
         filter_mid_y = shape[1] // 2
         mask_filter = np.ones(shape, dtype=np.float32)
@@ -28,7 +28,10 @@ def get_weights(shape, name, mask=None):
 
         if mask == 'a':
             mask_filter[filter_mid_x, filter_mid_y, :, :] = 0.
+
         W *= mask_filter
+    elif mask is not None:
+        raise ValueError("`mask` must be one of: 'a', 'b' or `None`.")
 
     return W
 
