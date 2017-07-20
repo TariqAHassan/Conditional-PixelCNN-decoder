@@ -55,15 +55,14 @@ class PixelCNN(object):
             with tf.variable_scope("fc_2"):
                 self.fc2 = GatedCNN([1, 1, conf.channel * color_dim], fc1, gated=False,
                                     mask='b', activation=False).output()
-                self.fc2 = tf.reshape(self.fc2, (-1, color_dim))
+                self.fc2 = tf.reshape(self.fc2, (-1, color_dim))  # flatten into 1D vector.
 
             self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
-                self.fc2, tf.cast(tf.reshape(self.X, [-1]), dtype=tf.int32)))
+                self.fc2, tf.cast(tf.reshape(self.X, shape=(-1,)), dtype=tf.int32)))
 
-            # Since this code was not run on CIFAR-10, I'm not sure which
-            # would be a suitable way to generate 3-channel images. Below are
-            # the 2 methods which may be used, with the first one (self.pred)
-            # being more likely.
+            # Since this code was not run on CIFAR-10, I'm not sure which would be
+            # a suitable way to generate 3-channel images. Below are the 2 methods
+            # which may be used, with the first one (self.pred) being more likely.
             self.pred_sampling = tf.reshape(tf.multinomial(
                 tf.nn.softmax(self.fc2), num_samples=1, seed=100), tf.shape(self.X))
             self.pred = tf.reshape(tf.argmax(tf.nn.softmax(
