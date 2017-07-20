@@ -13,7 +13,7 @@ def train(conf, data):
     trainer = tf.train.RMSPropOptimizer(1e-3)
     gradients = trainer.compute_gradients(model.loss)
 
-    clipped_gradients = [(tf.clip_by_value(_[0], -conf.grad_clip, conf.grad_clip), _[1]) for _ in gradients]
+    clipped_gradients = [(tf.clip_by_value(i[0], -conf.grad_clip, conf.grad_clip), i[1]) for i in gradients]
     optimizer = trainer.apply_gradients(clipped_gradients)
 
     saver = tf.train.Saver(tf.trainable_variables())

@@ -38,7 +38,7 @@ class GatedCNN(object):
                  mask=None, activation=True, conditional=None):
         self.fan_in = fan_in
         in_dim = self.fan_in.get_shape()[-1]
-        self.W_shape = [W_shape[0], W_shape[1], in_dim, W_shape[2]]
+        self.W_shape = (W_shape[0], W_shape[1], in_dim, W_shape[2])
         self.b_shape = W_shape[2]
 
         self.payload = payload

@@ -55,7 +55,7 @@ class PixelCNN(object):
             with tf.variable_scope("fc_2"):
                 self.fc2 = GatedCNN([1, 1, conf.channel * color_dim], fc1, gated=False,
                                     mask='b', activation=False).output()
-                self.fc2 = tf.reshape(self.fc2, (-1, color_dim))  # flatten into 1D vector.
+                self.fc2 = tf.reshape(self.fc2, (-1, color_dim))
 
             self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(
                 self.fc2, tf.cast(tf.reshape(self.X, shape=(-1,)), dtype=tf.int32)))
