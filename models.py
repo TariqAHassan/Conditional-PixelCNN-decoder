@@ -1,4 +1,3 @@
-import tensorflow as tf
 from layers import *
 
 
@@ -84,21 +83,21 @@ class ConvolutionalEncoder(object):
             as the decoder.
         """
 
-        W_conv1 = get_weights([5, 5, conf.channel, 100], "W_conv1")
-        b_conv1 = get_bias([100], "b_conv1")
+        W_conv1 = get_weights(shape=(5, 5, conf.channel, 100), name="W_conv1")
+        b_conv1 = get_bias(shape=(100,), name="b_conv1")
         conv1 = tf.nn.relu(conv_op(X, W_conv1) + b_conv1)
         pool1 = max_pool_2x2(conv1)
 
-        W_conv2 = get_weights([5, 5, 100, 150], "W_conv2")
-        b_conv2 = get_bias([150], "b_conv2")
+        W_conv2 = get_weights(shape=(5, 5, 100, 150), name="W_conv2")
+        b_conv2 = get_bias(shape=(150,), name="b_conv2")
         conv2 = tf.nn.relu(conv_op(pool1, W_conv2) + b_conv2)
         pool2 = max_pool_2x2(conv2)
 
-        W_conv3 = get_weights([3, 3, 150, 200], "W_conv3")
-        b_conv3 = get_bias([200], "b_conv3")
+        W_conv3 = get_weights(shape=(3, 3, 150, 200), name="W_conv3")
+        b_conv3 = get_bias(shape=(200,), name="b_conv3")
         conv3 = tf.nn.relu(conv_op(pool2, W_conv3) + b_conv3)
         conv3_reshape = tf.reshape(conv3, (-1, 7 * 7 * 200))
 
-        W_fc = get_weights([7 * 7 * 200, 10], "W_fc")
-        b_fc = get_bias([10], "b_fc")
+        W_fc = get_weights(shape=(7 * 7 * 200, 10), name="W_fc")
+        b_fc = get_bias(shape=(10,), name="b_fc")
         self.pred = tf.nn.softmax(tf.add(tf.matmul(conv3_reshape, W_fc), b_fc))
