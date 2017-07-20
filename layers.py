@@ -28,8 +28,8 @@ def get_weights(shape, name, mask=None):
 
         if mask == 'a':
             mask_filter[filter_mid_x, filter_mid_y, :, :] = 0.
-
         W *= mask_filter
+
     return W
 
 
