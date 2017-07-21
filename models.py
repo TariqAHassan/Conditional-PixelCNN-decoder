@@ -59,7 +59,7 @@ class PixelCNN(object):
         else:
             color_dim = 256
             with tf.variable_scope("fc_2"):
-                self.fc2 = GatedCNN([1, 1, conf.channel * color_dim], fc1, gated=False,
+                self.fc2 = GatedCNN([1, 1, conf.channels * color_dim], fc1, gated=False,
                                     mask='b', activation=False).output()
                 self.fc2 = tf.reshape(self.fc2, (-1, color_dim))
 
@@ -86,7 +86,7 @@ class ConvolutionalEncoder(object):
             as the decoder.
         """
 
-        W_conv1 = get_weights(shape=(5, 5, conf.channel, 100), name="W_conv1")
+        W_conv1 = get_weights(shape=(5, 5, conf.channels, 100), name="W_conv1")
         b_conv1 = get_bias(shape=(100,), name="b_conv1")
         conv1 = tf.nn.relu(conv_op(X, W_conv1) + b_conv1)
         pool1 = max_pool_2x2(conv1)

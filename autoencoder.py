@@ -5,8 +5,8 @@ import tensorflow as tf
 
 
 def trainAE(conf, data):
-    encoder_X = tf.placeholder(tf.float32, shape=[None, conf.img_height, conf.img_width, conf.channel])
-    decoder_X = tf.placeholder(tf.float32, shape=[None, conf.img_height, conf.img_width, conf.channel])
+    encoder_X = tf.placeholder(tf.float32, shape=[None, conf.img_height, conf.img_width, conf.channels])
+    decoder_X = tf.placeholder(tf.float32, shape=[None, conf.img_height, conf.img_width, conf.channels])
 
     encoder = ConvolutionalEncoder(encoder_X, conf)
     decoder = PixelCNN(decoder_X, conf, encoder.pred)
@@ -41,7 +41,7 @@ def trainAE(conf, data):
                     batch_X = binarize(data.train.next_batch(conf.batch_size)[0].reshape(conf.batch_size,
                                                                                          conf.img_height,
                                                                                          conf.img_width,
-                                                                                         conf.channel))
+                                                                                         conf.channels))
                 else:
                     batch_X, pointer = get_batch(data, pointer, conf.batch_size)
 

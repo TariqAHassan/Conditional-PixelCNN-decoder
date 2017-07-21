@@ -18,13 +18,13 @@ def one_hot(batch_y, num_classes):
 def generate_samples(sess, X, h, pred, conf, suff):
     print("Generating Sample Images...")
     n_row, n_col = 10, 10
-    samples = np.zeros((n_row * n_col, conf.img_height, conf.img_width, conf.channel), dtype=np.float32)
+    samples = np.zeros((n_row * n_col, conf.img_height, conf.img_width, conf.channels), dtype=np.float32)
     # TODO make it generic
     labels = one_hot(np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] * 10), conf.num_classes)
 
     for i in range(conf.img_height):
         for j in range(conf.img_width):
-            for k in range(conf.channel):
+            for k in range(conf.channels):
                 data_dict = {X: samples}
                 if conf.conditional is True:
                     data_dict[h] = labels
@@ -39,16 +39,16 @@ def generate_samples(sess, X, h, pred, conf, suff):
 def generate_ae(sess, encoder_X, decoder_X, y, data, conf, suff=''):
     print("Generating Sample Images...")
     n_row, n_col = 10, 10
-    samples = np.zeros((n_row * n_col, conf.img_height, conf.img_width, conf.channel), dtype=np.float32)
+    samples = np.zeros((n_row * n_col, conf.img_height, conf.img_width, conf.channels), dtype=np.float32)
     if conf.data == 'mnist':
         labels = binarize(data.train.next_batch(n_row * n_col)[0].reshape(
-            n_row * n_col, conf.img_height, conf.img_width, conf.channel))
+            n_row * n_col, conf.img_height, conf.img_width, conf.channels))
     else:
         labels = get_batch(data, 0, n_row * n_col)
 
     for i in range(conf.img_height):
         for j in range(conf.img_width):
-            for k in range(conf.channel):
+            for k in range(conf.channels):
                 next_sample = sess.run(y, {encoder_X: labels, decoder_X: samples})
                 if conf.data == 'mnist':
                     next_sample = binarize(next_sample)
@@ -64,9 +64,9 @@ def save_images(samples, n_row, n_col, conf, suff):
         images = images.transpose(1, 2, 0, 3)
         images = images.reshape((conf.img_height * n_row, conf.img_width * n_col))
     else:
-        images = images.reshape((n_row, n_col, conf.img_height, conf.img_width, conf.channel))
+        images = images.reshape((n_row, n_col, conf.img_height, conf.img_width, conf.channels))
         images = images.transpose(1, 2, 0, 3, 4)
-        images = images.reshape((conf.img_height * n_row, conf.img_width * n_col, conf.channel))
+        images = images.reshape((conf.img_height * n_row, conf.img_width * n_col, conf.channels))
 
     filename = datetime.now().strftime('%Y_%m_%d_%H_%M') + suff + ".jpg"
     scipy.misc.toimage(images, cmin=0.0, cmax=1.0).save(os.path.join(conf.samples_path, filename))
